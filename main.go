@@ -22,24 +22,27 @@ func main() {
 
 	mainCircle := NewDefaultCircle(300, 300, 100)
 	mainCircle.showBigRadius = radiusShows
-	mainCircle.AddByRatio(1, 8)
-	mainCircle.AddByRatio(2, 8)
-	c1 := mainCircle.AddByRatio(3, 8)
-	c1.radius = 150
-	c1.showBigRadius = radiusShows
-	c2 := c1.AddByDegree(90)
-	c2.radius = 200
-	c2.AddByDegree(90)
-	c2.AddByDegree(130)
-	c2.AddByDegree(170)
-	c1.AddByDegree(180)
+	mainCircle.AddByDegree(45)
+	mainCircle.AddByDegree(135)
+	// mainCircle.AddByRatio(2, 4)
+	// mainCircle.AddByRatio(1, 8)
+	// mainCircle.AddByRatio(2, 8)
+	// c1 := mainCircle.AddByRatio(3, 8)
+	// c1.radius = 150
+	// c1.showBigRadius = radiusShows
+	// c2 := c1.AddByDegree(90)
+	// c2.radius = 200
+	// c2.AddByDegree(90)
+	// c2.AddByDegree(130)
+	// c2.AddByDegree(170)
+	// c1.AddByDegree(180)
 	// c1.AddByDegree(220)
 	// c1.AddByDegree(240)
-	mainCircle.AddByRatio(4, 8)
-	mainCircle.AddByRatio(5, 8)
-	mainCircle.AddByRatio(6, 8)
-	mainCircle.AddByRatio(7, 8)
-	mainCircle.AddByRatio(8, 8)
+	// mainCircle.AddByRatio(4, 8)
+	// mainCircle.AddByRatio(5, 8)
+	// mainCircle.AddByRatio(6, 8)
+	// mainCircle.AddByRatio(7, 8)
+	// mainCircle.AddByRatio(8, 8)
 
 	game.objects = append(game.objects, mainCircle)
 

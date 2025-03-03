@@ -44,6 +44,7 @@ func (c *circle) Draw(screen *ebiten.Image) {
 }
 
 func (c *circle) AddByDegree(degree float64) *circle {
+	degree -= 90
 	newX, newY := GetPointOnCircle(float64(c.x), float64(c.y), float64(c.radius), degree)
 
 	newCircle := NewDefaultCircle(float32(newX), float32(newY), 50)
