@@ -1,4 +1,4 @@
-module skill-tree
+module skill-treemaker
 
 go 1.23.5
 
