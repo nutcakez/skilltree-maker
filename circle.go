@@ -8,32 +8,40 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-type circle struct {
+type Node struct {
 	showBigRadius                        bool
 	x, y, ownRadius, radius, strokeWidth float32
-	circles                              []*circle
+	circles                              []*Node
+	img                                  *ebiten.Image
 }
 
-func NewDefaultCircle(x, y, radius float32) *circle {
-	return &circle{
+func NewDefaultCircle(x, y, radius float32) *Node {
+	return &Node{
 		showBigRadius: false,
 		x:             x,
 		y:             y,
 		radius:        radius,
 		ownRadius:     10,
 		strokeWidth:   2,
-		circles:       make([]*circle, 0),
+		circles:       make([]*Node, 0),
+		img:           nil,
 	}
 }
 
-func (c *circle) Update() {}
+func (c *Node) Update() {}
 
-func (c *circle) Draw(screen *ebiten.Image) {
+func (c *Node) Draw(screen *ebiten.Image) {
 	for _, v := range c.circles {
 		vector.StrokeLine(screen, c.x, c.y, v.x, v.y, 2, orange, true)
 	}
 
-	vector.DrawFilledCircle(screen, c.x, c.y, c.ownRadius, red, true)
+	if c.img == nil {
+		vector.DrawFilledCircle(screen, c.x, c.y, c.ownRadius, red, true)
+	} else {
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(c.x), float64(c.y))
+		screen.DrawImage(c.img, &op)
+	}
 	if c.showBigRadius {
 		vector.StrokeCircle(screen, c.x, c.y, c.radius, c.strokeWidth, green, true)
 
@@ -43,7 +51,7 @@ func (c *circle) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (c *circle) AddByDegree(degree float64) *circle {
+func (c *Node) AddByDegree(degree float64) *Node {
 	degree -= 90
 	newX, newY := GetPointOnCircle(float64(c.x), float64(c.y), float64(c.radius), degree)
 
@@ -54,7 +62,7 @@ func (c *circle) AddByDegree(degree float64) *circle {
 	return newCircle
 }
 
-func (c *circle) AddByRatio(a, b float32) *circle {
+func (c *Node) AddByRatio(a, b float32) *Node {
 	ratio := a / b
 	d := 360 * ratio
 
