@@ -1,4 +1,4 @@
-module github.com/nutcakez/skill-treemaker
+module github.com/nutcakez/skilltree-maker
 
 go 1.23.5
 
