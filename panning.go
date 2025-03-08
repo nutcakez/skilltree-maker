@@ -29,6 +29,9 @@ func (p *Panning) Update() {
 	}
 	if wheelY < 0 {
 		p.zoom -= 0.25
+		if p.zoom <= 0.2 {
+			p.zoom = 0.2
+		}
 		p.changed = true
 	}
 
