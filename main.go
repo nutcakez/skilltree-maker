@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 var (
@@ -15,8 +17,11 @@ var (
 
 func main() {
 	ebiten.SetWindowSize(1280, 960)
+
 	game := game{
 		objects: make([]IDrawUpdate, 0),
+		panner:  NewPanning(),
+		screen2: ebiten.NewImage(2000, 2000),
 	}
 
 	images := ReadAllImageFromFolder("96x96")
@@ -34,33 +39,16 @@ func main() {
 	c2.showBigRadius = radiusShows
 	c3 := c1.AddImgByDegree(135, images[5])
 	c3.AddImgByDegree(45, images[6])
-	c3.AddImgByDegree(90, images[8])
-	// mainCircle := NewDefaultCircle(300, 300, 100)
-	// mainCircle.showBigRadius = radiusShows
-	// mainCircle.
-	// 	AddByDegree(45).
-	// 	AddByDegree(135)
-	// mainCircle.AddByRatio(2, 4)
-	// mainCircle.AddByRatio(1, 8)
-	// mainCircle.AddByRatio(2, 8)
-	// c1 := mainCircle.AddByRatio(3, 8)
-	// c1.radius = 150
-	// c1.showBigRadius = radiusShows
-	// c2 := c1.AddByDegree(90)
-	// c2.radius = 200
-	// c2.AddByDegree(90)
-	// c2.AddByDegree(130)
-	// c2.AddByDegree(170)
-	// c1.AddByDegree(180)
-	// c1.AddByDegree(220)
-	// c1.AddByDegree(240)
-	// mainCircle.AddByRatio(4, 8)
-	// mainCircle.AddByRatio(5, 8)
-	// mainCircle.AddByRatio(6, 8)
-	// mainCircle.AddByRatio(7, 8)
-	// mainCircle.AddByRatio(8, 8)
+	c4 := c3.AddImgByDegree(90, images[8])
 
-	// game.objects = append(game.objects, mainCircle)
+	c5 := c4.AddImgByDegree(50, images[11])
+	c4.AddImgByDegree(100, images[12])
+	c4.AddImgByDegree(150, images[13])
+
+	c5.AddImgByDegree(60, images[14])
+	c5.AddImgByDegree(90, images[15])
+	c5.AddImgByDegree(120, images[16])
+
 	game.objects = append(game.objects, otherMainCircle)
 
 	if err := ebiten.RunGame(&game); err != nil {
@@ -69,26 +57,46 @@ func main() {
 
 type game struct {
 	objects []IDrawUpdate
+	panner  *Panning
+	screen2 *ebiten.Image
 }
 
 func (g *game) Update() error {
-
+	g.panner.Update()
 	for i := range g.objects {
-		g.objects[i].Update()
+		g.objects[i].Update(g.panner.offsetX, g.panner.offsetY, g.panner.zoom)
 	}
+
+	g.screen2.Clear()
 
 	return nil
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
 	for i := range g.objects {
-		g.objects[i].Draw(screen)
+		g.objects[i].Draw(g.screen2)
 	}
+
+	// we want to show 500x500 picture
+
+	op := ebiten.DrawImageOptions{}
+	// if we zoom in it means we want to see a bigger picture from screen2 but scaled to 500x500
+
+	// figure out the scale here
+	op.GeoM.Scale(1/g.panner.zoom, 1/g.panner.zoom)
+
+	// which part of the stuff we want?
+	rect := image.Rect(g.panner.offsetX, g.panner.offsetY, int(500*g.panner.zoom), int(500*g.panner.zoom))
+	img := ebiten.NewImageFromImage(g.screen2.SubImage(rect))
+
+	vector.StrokeRect(screen, 0, 0, 500, 500, 2, color.RGBA{255, 0, 0, 255}, true)
+
+	screen.DrawImage(img, &op)
 }
 
 func (g *game) Layout(a, b int) (int, int) { return 1280, 960 }
 
 type IDrawUpdate interface {
 	Draw(*ebiten.Image)
-	Update()
+	Update(int, int, float64)
 }

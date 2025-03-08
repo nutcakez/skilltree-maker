@@ -13,6 +13,7 @@ import (
 type Node struct {
 	showBigRadius, active                bool
 	x, y, ownRadius, radius, strokeWidth float32
+	offsetX, offsetY                     int
 	childs                               []*Node
 	img                                  *ebiten.Image
 }
@@ -45,23 +46,27 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 	}
 }
 
-func (c *Node) Update() {
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
-		if !c.checkClick() {
-			for i := range c.childs {
-				c.childs[i].Update()
-			}
+func (c *Node) Update(offsetX, offsetY int, zoom float64) {
+	c.offsetX = offsetX
+	c.offsetY = offsetY
+	if !c.checkClick(zoom) {
+		for i := range c.childs {
+			c.childs[i].Update(offsetX, offsetY, zoom)
 		}
 	}
 }
 
-func (c *Node) checkClick() bool {
+func (c *Node) checkClick(zoom float64) bool {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
 		x, y := ebiten.CursorPosition()
 		if c.img != nil {
 			w := c.img.Bounds().Dx()
 			h := c.img.Bounds().Dy()
-			if PointInRect(x, y, int(c.x-float32(w/2)), int(c.y-float32(h/2)), w, h) {
+			if PointInRect(x, y,
+				int(float64(c.x-float32(w/2)+float32(c.offsetX))/zoom),
+				int(float64(c.y-float32(h/2)+float32(c.offsetY))/zoom),
+				int(float64(w)/zoom),
+				int(float64(h)/zoom)) {
 				c.active = !c.active
 				return true
 			}
@@ -74,12 +79,11 @@ func (c *Node) checkClick() bool {
 	}
 
 	return false
-
 }
 
 func (c *Node) Draw(screen *ebiten.Image) {
 	for _, v := range c.childs {
-		vector.StrokeLine(screen, c.x, c.y, v.x, v.y, 2, orange, true)
+		vector.StrokeLine(screen, c.x+float32(c.offsetX), c.y+float32(c.offsetY), v.x+float32(c.offsetX), v.y+float32(c.offsetY), 2, orange, true)
 	}
 
 	var color color.RGBA
@@ -94,12 +98,12 @@ func (c *Node) Draw(screen *ebiten.Image) {
 		vector.DrawFilledCircle(screen, c.x, c.y, c.ownRadius, color, true)
 	} else {
 		op := ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(c.x-float32(c.img.Bounds().Dx()/2)), float64(c.y-float32(c.img.Bounds().Dy()/2)))
+		op.GeoM.Translate(float64(c.x-float32(c.img.Bounds().Dx()/2)+float32(c.offsetX)), float64(c.y-float32(c.img.Bounds().Dy()/2)+float32(c.offsetY)))
 		screen.DrawImage(c.img, &op)
 		strokeWith := 5
 		vector.StrokeRect(screen,
-			float32(c.x-float32(c.img.Bounds().Dx()/2)),
-			float32(c.y-float32(c.img.Bounds().Dy()/2)),
+			float32(c.x-float32(c.img.Bounds().Dx()/2)+float32(c.offsetX)),
+			float32(c.y-float32(c.img.Bounds().Dy()/2)+float32(c.offsetY)),
 			float32(c.img.Bounds().Dx()),
 			float32(c.img.Bounds().Dy()),
 			float32(strokeWith),
@@ -108,8 +112,7 @@ func (c *Node) Draw(screen *ebiten.Image) {
 		)
 	}
 	if c.showBigRadius {
-		vector.StrokeCircle(screen, c.x, c.y, c.radius, c.strokeWidth, green, true)
-
+		vector.StrokeCircle(screen, c.x+float32(c.offsetX), c.y+float32(c.offsetY), c.radius, c.strokeWidth, green, true)
 	}
 	for _, v := range c.childs {
 		v.Draw(screen)
