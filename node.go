@@ -11,10 +11,11 @@ import (
 )
 
 type Node struct {
-	showBigRadius, active                bool
+	showBigRadius, active, startNode     bool
 	x, y, ownRadius, radius, strokeWidth float32
 	offsetX, offsetY                     int
 	childs                               []*Node
+	parents                              []*Node
 	img                                  *ebiten.Image
 }
 
@@ -28,6 +29,7 @@ func NewDefaultCircle(x, y, radius float32) *Node {
 		ownRadius:     10,
 		strokeWidth:   2,
 		childs:        make([]*Node, 0),
+		parents:       make([]*Node, 0),
 		img:           nil,
 	}
 }
@@ -66,7 +68,7 @@ func (c *Node) checkClick(zoom float64) bool {
 				int(float64(c.x-float32(w/2)+float32(c.offsetX))/zoom),
 				int(float64(c.y-float32(h/2)+float32(c.offsetY))/zoom),
 				int(float64(w)/zoom),
-				int(float64(h)/zoom)) {
+				int(float64(h)/zoom)) && c.CanBeActivated() {
 				c.active = !c.active
 				return true
 			}
@@ -124,6 +126,7 @@ func (c *Node) AddByDegree(degree float64) *Node {
 	newX, newY := GetPointOnCircle(float64(c.x), float64(c.y), float64(c.radius), degree)
 
 	newCircle := NewDefaultCircle(float32(newX), float32(newY), 50)
+	newCircle.parents = append(newCircle.parents, c)
 
 	c.childs = append(c.childs, newCircle)
 
@@ -135,6 +138,7 @@ func (c *Node) AddImgByDegree(degree float64, img *ebiten.Image) *Node {
 	newX, newY := GetPointOnCircle(float64(c.x), float64(c.y), float64(c.radius), degree)
 
 	newNode := NewDefaultImgNode(float32(newX), float32(newY), img)
+	newNode.parents = append(newNode.parents, c)
 
 	c.childs = append(c.childs, newNode)
 
@@ -146,6 +150,18 @@ func (c *Node) AddByRatio(a, b float32) *Node {
 	d := 360 * ratio
 
 	return c.AddByDegree(float64(d))
+}
+
+func (c *Node) CanBeActivated() bool {
+	if c.startNode {
+		return true
+	}
+	for _, parent := range c.parents {
+		if parent.active {
+			return true
+		}
+	}
+	return false
 }
 
 func GetPointOnCircle(cx, cy, radius, degree float64) (float64, float64) {

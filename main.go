@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"log"
+	"os"
+	"runtime/pprof"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -17,6 +21,13 @@ var (
 
 func main() {
 	ebiten.SetWindowSize(1280, 960)
+
+	f, err := os.Create("cpuprofile")
+	if err != nil {
+		log.Fatal(err)
+	}
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
 
 	game := game{
 		objects: make([]IDrawUpdate, 0),
@@ -31,6 +42,7 @@ func main() {
 
 	otherMainCircle := NewDefaultImgNode(300, 700, images[2])
 	otherMainCircle.showBigRadius = radiusShows
+	otherMainCircle.startNode = true
 	c1 := otherMainCircle.AddImgByDegree(45, images[3])
 	c2 := c1.AddImgByDegree(45, images[4])
 
@@ -73,6 +85,8 @@ func (g *game) Update() error {
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
+	msg := fmt.Sprintf(`FPS: %0.2f, TPS: %0.2f`, ebiten.ActualFPS(), ebiten.ActualTPS())
+	ebitenutil.DebugPrint(screen, msg)
 	for i := range g.objects {
 		g.objects[i].Draw(g.screen2)
 	}

@@ -1,0 +1,16 @@
+Display:
+  - Can set width - height
+  - Can figure out skill tree height/width with a full skilltree (to have borders)
+  - Can set start position when opened
+  - Show tooltip
+  - How to handle cost conditions (ie do u have enough money to buy it?)
+    - func() bool field to check/validate and spend the money
+  - Effect should be also a func() field
+
+Node:
+  - Above mentioned cost related func and effect
+
+
+
+Bug:
+  - Doing crazy zoom in/out will cause a huge hickup
