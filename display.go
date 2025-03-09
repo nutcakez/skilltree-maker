@@ -25,7 +25,7 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 		h:         height,
 		visible:   false,
 		node:      nil,
-		offscreen: ebiten.NewImage(1000, 1000),
+		offscreen: ebiten.NewImage(2000, 2000),
 		panning:   NewPanning(),
 	}
 }
@@ -43,7 +43,7 @@ func (d *Display) Draw(screen *ebiten.Image) {
 	// if we zoom in it means we want to see a bigger picture from screen2 but scaled to 500x500
 
 	// figure out the scale here
-	// op.GeoM.Scale(1/d.panning.zoom, 1/d.panning.zoom)
+	op.GeoM.Scale(1/d.panning.zoom, 1/d.panning.zoom)
 	op.GeoM.Translate(float64(d.posX), float64(d.posY))
 
 	// which part of the stuff we want?

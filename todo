@@ -14,3 +14,4 @@ Node:
 
 Bug:
   - Doing crazy zoom in/out will cause a huge hickup
+  - Shouldnt be able to zoom out more than whats on the offscreen. Or it will show black edge.
