@@ -30,9 +30,11 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	game := game{
-		objects: make([]IDrawUpdate, 0),
-		panner:  NewPanning(),
-		screen2: ebiten.NewImage(2000, 2000),
+		objects:        make([]IDrawUpdate, 0),
+		panner:         NewPanning(),
+		screen2:        ebiten.NewImage(2000, 2000),
+		screen2OffsetX: 50,
+		screen2OffsetY: 50,
 	}
 
 	images := ReadAllImageFromFolder("96x96")
@@ -68,15 +70,16 @@ func main() {
 }
 
 type game struct {
-	objects []IDrawUpdate
-	panner  *Panning
-	screen2 *ebiten.Image
+	objects                        []IDrawUpdate
+	panner                         *Panning
+	screen2                        *ebiten.Image
+	screen2OffsetX, screen2OffsetY int
 }
 
 func (g *game) Update() error {
 	g.panner.Update()
 	for i := range g.objects {
-		g.objects[i].Update(g.panner.offsetX, g.panner.offsetY, g.panner.zoom)
+		g.objects[i].Update(g.panner.offsetX, g.panner.offsetY, g.screen2OffsetX, g.screen2OffsetY, g.panner.zoom)
 	}
 
 	g.screen2.Clear()
@@ -98,12 +101,13 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 	// figure out the scale here
 	op.GeoM.Scale(1/g.panner.zoom, 1/g.panner.zoom)
+	op.GeoM.Translate(float64(g.screen2OffsetX), float64(g.screen2OffsetY))
 
 	// which part of the stuff we want?
 	rect := image.Rect(g.panner.offsetX, g.panner.offsetY, int(500*g.panner.zoom), int(500*g.panner.zoom))
 	img := ebiten.NewImageFromImage(g.screen2.SubImage(rect))
 
-	vector.StrokeRect(screen, 0, 0, 500, 500, 2, color.RGBA{255, 0, 0, 255}, true)
+	vector.StrokeRect(screen, 0+float32(g.screen2OffsetX), 0+float32(g.screen2OffsetY), 500, 500, 2, color.RGBA{255, 0, 0, 255}, true)
 
 	screen.DrawImage(img, &op)
 }
@@ -112,5 +116,5 @@ func (g *game) Layout(a, b int) (int, int) { return 1280, 960 }
 
 type IDrawUpdate interface {
 	Draw(*ebiten.Image)
-	Update(int, int, float64)
+	Update(int, int, int, int, float64)
 }

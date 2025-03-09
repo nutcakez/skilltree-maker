@@ -48,25 +48,25 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 	}
 }
 
-func (c *Node) Update(offsetX, offsetY int, zoom float64) {
+func (c *Node) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) {
 	c.offsetX = offsetX
 	c.offsetY = offsetY
-	if !c.checkClick(zoom) {
+	if !c.checkClick(zoom, windowOffsetX, windowOffsetY) {
 		for i := range c.childs {
-			c.childs[i].Update(offsetX, offsetY, zoom)
+			c.childs[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
 		}
 	}
 }
 
-func (c *Node) checkClick(zoom float64) bool {
+func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) bool {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
 		x, y := ebiten.CursorPosition()
 		if c.img != nil {
 			w := c.img.Bounds().Dx()
 			h := c.img.Bounds().Dy()
 			if PointInRect(x, y,
-				int(float64(c.x-float32(w/2)+float32(c.offsetX))/zoom),
-				int(float64(c.y-float32(h/2)+float32(c.offsetY))/zoom),
+				int(float64(c.x-float32(w/2)+float32(c.offsetX))/zoom+float64(windowOffsetX)),
+				int(float64(c.y-float32(h/2)+float32(c.offsetY))/zoom+float64(windowOffsetY)),
 				int(float64(w)/zoom),
 				int(float64(h)/zoom)) && c.CanBeActivated() {
 				c.active = !c.active
@@ -85,7 +85,8 @@ func (c *Node) checkClick(zoom float64) bool {
 
 func (c *Node) Draw(screen *ebiten.Image) {
 	for _, v := range c.childs {
-		vector.StrokeLine(screen, c.x+float32(c.offsetX), c.y+float32(c.offsetY), v.x+float32(c.offsetX), v.y+float32(c.offsetY), 2, orange, true)
+		// with antialias false its a bit better when zoomed out, should be set to false only when its zoomed out?
+		vector.StrokeLine(screen, c.x+float32(c.offsetX), c.y+float32(c.offsetY), v.x+float32(c.offsetX), v.y+float32(c.offsetY), 2, orange, false)
 	}
 
 	var color color.RGBA
