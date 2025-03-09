@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -33,6 +35,9 @@ func (p *Panning) Update() {
 			p.zoom = 0.2
 		}
 		p.changed = true
+	}
+	if p.changed {
+		fmt.Println(p.zoom)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
