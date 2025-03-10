@@ -17,6 +17,8 @@ type Node struct {
 	childs                               []*Node
 	parents                              []*Node
 	img                                  *ebiten.Image
+	onClickEffect                        func()
+	requirement                          func() bool
 }
 
 func NewDefaultCircle(x, y, radius float32) *Node {
