@@ -31,6 +31,8 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 		strokeWidth:   2,
 		childs:        make([]*Node, 0),
 		img:           img,
+		onActivate:    func() { fmt.Println("actived node at", x, y) },
+		requirement:   func() bool { return true },
 	}
 }
 

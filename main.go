@@ -45,7 +45,7 @@ func main() {
 	otherMainCircle.showBigRadius = radiusShows
 	otherMainCircle.startNode = true
 	otherMainCircle.onActivate = func() {
-		fmt.Println("yes this is clicked")
+		fmt.Println("yes, this is not the default")
 	}
 	c1 := otherMainCircle.AddByDegree(45, images[3])
 	c2 := c1.AddByDegree(45, images[4])
