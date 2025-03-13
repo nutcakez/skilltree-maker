@@ -24,15 +24,14 @@ type Node struct {
 func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 	return &Node{
 		showBigRadius: false,
-		active:        false,
-		x:             x,
-		y:             y,
-		radius:        300,
-		strokeWidth:   2,
-		childs:        make([]*Node, 0),
-		img:           img,
-		onActivate:    func() { fmt.Println("actived node at", x, y) },
-		requirement:   func() bool { return true },
+		active:        false, x: x,
+		y:           y,
+		radius:      300,
+		strokeWidth: 2,
+		childs:      make([]*Node, 0),
+		img:         img,
+		onActivate:  func() { fmt.Println("actived node at", x, y) },
+		requirement: func() bool { return true },
 	}
 }
 
