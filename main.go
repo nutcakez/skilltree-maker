@@ -30,7 +30,6 @@ func main() {
 	game := game{
 		objects:        make([]IDrawUpdate, 0),
 		panner:         NewPanning(),
-		screen2:        ebiten.NewImage(2000, 2000),
 		screen2OffsetX: 50,
 		screen2OffsetY: 50,
 		display:        NewDisplay(200, 200, 500, 500),

@@ -26,7 +26,7 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 		h:         height,
 		visible:   false,
 		node:      nil,
-		offscreen: ebiten.NewImage(2000, 2000),
+		offscreen: ebiten.NewImage(4000, 4000),
 		panning:   NewPanning(),
 		skillTree: &SkillTree{
 			nodes: make([]*Node, 0),
