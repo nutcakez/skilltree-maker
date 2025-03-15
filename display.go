@@ -48,9 +48,8 @@ func (d *Display) Draw(screen *ebiten.Image) {
 
 	// which part of the stuff we want?
 	rect := image.Rect(d.panning.offsetX, d.panning.offsetY, int(float64(d.w)*d.panning.zoom), int(float64(d.h)*d.panning.zoom))
-	img := ebiten.NewImageFromImage(d.offscreen.SubImage(rect))
 
 	vector.StrokeRect(screen, 0+float32(d.posX), 0+float32(d.posY), float32(d.w), float32(d.h), 2, color.RGBA{255, 0, 0, 255}, true)
 
-	screen.DrawImage(img, &op)
+	screen.DrawImage(d.offscreen.SubImage(rect).(*ebiten.Image), &op)
 }
