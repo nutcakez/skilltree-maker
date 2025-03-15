@@ -66,7 +66,7 @@ func main() {
 	c5.AddByDegree(120, images[16])
 
 	game.display.node = otherMainCircle
-	// game.objects = append(game.objects, otherMainCircle)
+	game.display.skillTree.AddNode(otherMainCircle)
 
 	if err := ebiten.RunGame(&game); err != nil {
 	}

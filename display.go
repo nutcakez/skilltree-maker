@@ -13,6 +13,7 @@ type Display struct {
 	w, h       int
 	visible    bool
 	node       *Node
+	skillTree  *SkillTree
 	offscreen  *ebiten.Image
 	panning    *Panning
 }
@@ -27,17 +28,19 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 		node:      nil,
 		offscreen: ebiten.NewImage(2000, 2000),
 		panning:   NewPanning(),
+		skillTree: &SkillTree{
+			nodes: make([]*Node, 0),
+		},
 	}
 }
 
 func (d *Display) Update() {
 	d.panning.Update()
-	// g.objects[i].Update(g.panner.offsetX, g.panner.offsetY, g.screen2OffsetX, g.screen2OffsetY, g.panner.zoom)
-	d.node.Update(d.panning.offsetX, d.panning.offsetY, int(d.posX), int(d.posY), d.panning.zoom)
-	d.offscreen.Fill(color.RGBA{0, 0, 255, 200})
+	d.skillTree.Update(d.panning.offsetX, d.panning.offsetY, int(d.posX), int(d.posY), d.panning.zoom)
 }
 
 func (d *Display) Draw(screen *ebiten.Image) {
+	d.offscreen.Fill(color.RGBA{0, 0, 255, 200})
 	d.node.Draw(d.offscreen)
 	op := ebiten.DrawImageOptions{}
 	// if we zoom in it means we want to see a bigger picture from screen2 but scaled to 500x500

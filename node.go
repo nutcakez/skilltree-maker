@@ -19,6 +19,7 @@ type Node struct {
 	img                              *ebiten.Image
 	onActivate                       func()
 	requirement                      func() bool
+	tags                             map[string]string
 }
 
 func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
@@ -32,6 +33,7 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 		img:         img,
 		onActivate:  func() { fmt.Println("actived node at", x, y) },
 		requirement: func() bool { return true },
+		tags:        nil,
 	}
 }
 
@@ -117,6 +119,16 @@ func (c *Node) AddByRatio(a, b float32, img *ebiten.Image) *Node {
 	d := 360 * ratio
 
 	return c.AddByDegree(float64(d), img)
+}
+
+func (n *Node) AddTag(key, value string) {
+	if n.tags == nil {
+		n.tags = map[string]string{
+			key: value,
+		}
+	} else {
+		n.tags[key] = value
+	}
 }
 
 func (c *Node) CanBeActivated() bool {
