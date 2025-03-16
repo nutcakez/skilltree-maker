@@ -27,7 +27,8 @@ func ReadAllImageFromFolder(path string) []*ebiten.Image {
 		return images
 	}
 
-	for _, fileName := range files {
+	for i, fileName := range files {
+		fmt.Println(i, fileName.Name())
 		img, _, err := ebitenutil.NewImageFromFile(path + "/" + fileName.Name())
 		if err != nil {
 			fmt.Println(err)

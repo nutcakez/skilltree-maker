@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 
@@ -19,7 +20,7 @@ type Display struct {
 }
 
 func NewDisplay(posX, posY float64, width, height int) *Display {
-	return &Display{
+	display := &Display{
 		posX:      posX,
 		posY:      posY,
 		w:         width,
@@ -32,6 +33,33 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 			nodes: make([]*Node, 0),
 		},
 	}
+
+	return display
+}
+
+func (d *Display) SetStartPosition(node *Node) {
+	var posX, posY float32
+	if node == nil {
+		posX = d.skillTree.nodes[0].x
+		posY = d.skillTree.nodes[0].y
+		// w = d.skillTree.nodes[0].img.Bounds().Dx()
+		// h = d.skillTree.nodes[0].img.Bounds().Dy()
+	} else {
+		for i := range d.skillTree.nodes {
+			if d.skillTree.nodes[i] == node {
+				posX = d.skillTree.nodes[i].x
+				posY = d.skillTree.nodes[i].y
+				// w = d.skillTree.nodes[0].img.Bounds().Dx()
+				// h = d.skillTree.nodes[0].img.Bounds().Dy()
+			}
+		}
+	}
+
+	midX := posX
+	midY := posY
+	d.panning.offsetX = -int(midX - float32(d.w)/float32(2))
+	d.panning.offsetY = -int(midY - float32(d.h)/float32(2))
+	fmt.Println("offsets", d.panning.offsetX, d.panning.offsetY)
 }
 
 func (d *Display) Update() {

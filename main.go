@@ -38,34 +38,55 @@ func main() {
 	images := ReadAllImageFromFolder("96x96")
 	fmt.Println(images)
 
-	radiusShows := true
+	// radiusShows := true
 
-	otherMainCircle := NewDefaultImgNode(300, 700, images[2])
-	otherMainCircle.showBigRadius = radiusShows
-	otherMainCircle.startNode = true
-	otherMainCircle.onActivate = func() {
-		fmt.Println("yes, this is not the default")
-	}
-	c1 := otherMainCircle.AddByDegree(45, images[3])
-	c2 := c1.AddByDegree(45, images[4])
+	// attack 5
+	// hp 7
+	// cd 15
+	// range 20
 
-	c2.AddByDegree(45, images[5])
-	c2.AddByDegree(90, images[7])
-	c2.showBigRadius = radiusShows
-	c3 := c1.AddByDegree(135, images[5])
-	c3.AddByDegree(45, images[6])
-	c4 := c3.AddByDegree(90, images[8])
+	startNode := NewDefaultImgNode(2000, 2000, images[32])
+	startNode.startNode = true
+	startNode.radius = 300
+	game.display.skillTree.AddNode(startNode)
 
-	c5 := c4.AddByDegree(50, images[11])
-	c4.AddByDegree(100, images[12])
-	c4.AddByDegree(150, images[13])
+	// ran1 nodes
+	theShield := startNode.AddByDegree(22.5, images[1])
+	game.display.skillTree.AddNode(theShield)
+	hypnoBot := startNode.AddByDegree(22.5+45, images[2])
+	game.display.skillTree.AddNode(hypnoBot)
+	plasmaGrenade := startNode.AddByDegree(22.5+90, images[3])
+	game.display.skillTree.AddNode(plasmaGrenade)
+	iceBlaster := startNode.AddByDegree(22.5+135, images[4])
+	game.display.skillTree.AddNode(iceBlaster)
+	aiSoldier := startNode.AddByDegree(22.5+180, images[5])
+	game.display.skillTree.AddNode(aiSoldier)
+	poisonTrap := startNode.AddByDegree(22.5+225, images[6])
+	game.display.skillTree.AddNode(poisonTrap)
+	flameThrower := startNode.AddByDegree(22.5+270, images[7])
+	game.display.skillTree.AddNode(flameThrower)
+	medic := startNode.AddByDegree(22.5+315, images[8])
+	game.display.skillTree.AddNode(medic)
+	// ran1 nodes end
 
-	c5.AddByDegree(60, images[14])
-	c5.AddByDegree(90, images[15])
-	c5.AddByDegree(120, images[16])
+	// rank2 nodes
+	theShieldHp1 := theShield.AddByDegree(11.25, images[7])
+	theShieldHp2 := theShield.AddByDegree(11.25+22.5, images[7])
+	game.display.skillTree.AddNode(theShieldHp1)
+	game.display.skillTree.AddNode(theShieldHp2)
 
-	game.display.node = otherMainCircle
-	game.display.skillTree.AddNode(otherMainCircle)
+	hypnoBotCd1 := hypnoBot.AddByDegree(11.25+(22.5*2), images[15])
+	hypnoBotCd2 := hypnoBot.AddByDegree(11.25+(22.5*3), images[15])
+	game.display.skillTree.AddNode(hypnoBotCd1)
+	game.display.skillTree.AddNode(hypnoBotCd2)
+
+	plasmaGrenadeRange1 := plasmaGrenade.AddByDegree(11.25+(22.5*4), images[20])
+	plasmaGrenadeDmg2 := plasmaGrenade.AddByDegree(11.25+(22.5*5), images[5])
+	game.display.skillTree.AddNode(plasmaGrenadeRange1)
+	game.display.skillTree.AddNode(plasmaGrenadeDmg2)
+
+	game.display.node = startNode
+	game.display.SetStartPosition(nil)
 
 	if err := ebiten.RunGame(&game); err != nil {
 	}
