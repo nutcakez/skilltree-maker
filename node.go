@@ -40,11 +40,12 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 func (c *Node) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) {
 	c.offsetX = offsetX
 	c.offsetY = offsetY
-	if !c.checkClick(zoom, windowOffsetX, windowOffsetY) {
-		for i := range c.childs {
-			c.childs[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
-		}
-	}
+	c.checkClick(zoom, windowOffsetX, windowOffsetY)
+	// if !c.checkClick(zoom, windowOffsetX, windowOffsetY) {
+	// 	for i := range c.childs {
+	// 		c.childs[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
+	// 	}
+	// }
 }
 
 func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) bool {
@@ -67,11 +68,6 @@ func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) bool {
 }
 
 func (c *Node) Draw(screen *ebiten.Image) {
-	for _, v := range c.childs {
-		// with antialias false its a bit better when zoomed out, should be set to false only when its zoomed out?
-		vector.StrokeLine(screen, c.x+float32(c.offsetX), c.y+float32(c.offsetY), v.x+float32(c.offsetX), v.y+float32(c.offsetY), 2, orange, false)
-	}
-
 	var color color.RGBA
 
 	if c.active {
@@ -97,9 +93,28 @@ func (c *Node) Draw(screen *ebiten.Image) {
 	if c.showBigRadius {
 		vector.StrokeCircle(screen, c.x+float32(c.offsetX), c.y+float32(c.offsetY), c.radius, c.strokeWidth, green, true)
 	}
-	for _, v := range c.childs {
-		v.Draw(screen)
+	// for _, v := range c.childs {
+	// 	v.Draw(screen)
+	// }
+}
+
+func (n *Node) DrawLines(screen *ebiten.Image) {
+	for _, v := range n.childs {
+		// with antialias false its a bit better when zoomed out, should be set to false only when its zoomed out?
+		vector.StrokeLine(screen, n.x+float32(n.offsetX), n.y+float32(n.offsetY), v.x+float32(n.offsetX), v.y+float32(n.offsetY), 2, orange, false)
 	}
+}
+
+func (n *Node) AddByDegreeWithOtherCircle(degree float64, circle Circle, img *ebiten.Image) *Node {
+	degree -= 90
+	newX, newY := GetPointOnCircle(circle.x, circle.y, circle.radius, degree)
+
+	newNode := NewDefaultImgNode(float32(newX), float32(newY), img)
+	newNode.parents = append(newNode.parents, n)
+
+	n.childs = append(n.childs, newNode)
+
+	return newNode
 }
 
 func (c *Node) AddByDegree(degree float64, img *ebiten.Image) *Node {
@@ -129,6 +144,22 @@ func (n *Node) AddTag(key, value string) {
 	} else {
 		n.tags[key] = value
 	}
+}
+
+// probably this is just lazy work from my side
+func (n *Node) AddMutualConnection(node *Node) {
+	n.AddMutualParentConnection(node)
+	n.AddMutualChildConnection(node)
+}
+
+func (n *Node) AddMutualParentConnection(node *Node) {
+	n.parents = append(n.parents, node)
+	node.parents = append(node.parents, n)
+}
+
+func (n *Node) AddMutualChildConnection(node *Node) {
+	n.childs = append(n.childs, node)
+	node.childs = append(node.childs, n)
 }
 
 func (c *Node) CanBeActivated() bool {

@@ -45,8 +45,20 @@ func main() {
 	// cd 15
 	// range 20
 
+	dmgImg := images[5]
+	hpImg := images[7]
+	cdImg := images[15]
+	rangeImg := images[20]
+
+	rank2Circle := Circle{
+		x:      2000,
+		y:      2000,
+		radius: 600,
+	}
+
 	startNode := NewDefaultImgNode(2000, 2000, images[32])
 	startNode.startNode = true
+	startNode.active = true
 	startNode.radius = 300
 	game.display.skillTree.AddNode(startNode)
 
@@ -70,20 +82,50 @@ func main() {
 	// ran1 nodes end
 
 	// rank2 nodes
-	theShieldHp1 := theShield.AddByDegree(11.25, images[7])
-	theShieldHp2 := theShield.AddByDegree(11.25+22.5, images[7])
+	theShieldHp1 := theShield.AddByDegreeWithOtherCircle(11.25, rank2Circle, images[7])
+	theShieldHp2 := theShield.AddByDegreeWithOtherCircle(11.25+22.5, rank2Circle, images[7])
 	game.display.skillTree.AddNode(theShieldHp1)
 	game.display.skillTree.AddNode(theShieldHp2)
 
-	hypnoBotCd1 := hypnoBot.AddByDegree(11.25+(22.5*2), images[15])
-	hypnoBotCd2 := hypnoBot.AddByDegree(11.25+(22.5*3), images[15])
+	hypnoBotCd1 := hypnoBot.AddByDegreeWithOtherCircle(11.25+(22.5*2), rank2Circle, cdImg)
+	theShieldHp2.AddMutualParentConnection(hypnoBotCd1)
+	theShieldHp2.AddMutualChildConnection(hypnoBotCd1)
+	hypnoBotCd2 := hypnoBot.AddByDegreeWithOtherCircle(11.25+(22.5*3), rank2Circle, cdImg)
 	game.display.skillTree.AddNode(hypnoBotCd1)
 	game.display.skillTree.AddNode(hypnoBotCd2)
 
-	plasmaGrenadeRange1 := plasmaGrenade.AddByDegree(11.25+(22.5*4), images[20])
-	plasmaGrenadeDmg2 := plasmaGrenade.AddByDegree(11.25+(22.5*5), images[5])
+	plasmaGrenadeRange1 := plasmaGrenade.AddByDegreeWithOtherCircle(11.25+(22.5*4), rank2Circle, images[20])
+	plasmaGrenadeDmg2 := plasmaGrenade.AddByDegreeWithOtherCircle(11.25+(22.5*5), rank2Circle, images[5])
+	plasmaGrenadeRange1.AddMutualChildConnection(hypnoBotCd2)
+	plasmaGrenadeRange1.AddMutualParentConnection(hypnoBotCd2)
 	game.display.skillTree.AddNode(plasmaGrenadeRange1)
 	game.display.skillTree.AddNode(plasmaGrenadeDmg2)
+
+	iceBlasterDmg1 := iceBlaster.AddByDegreeWithOtherCircle(11.25+(22.5*6), rank2Circle, dmgImg)
+	iceBlasterRange1 := iceBlaster.AddByDegreeWithOtherCircle(11.25+(22.5*7), rank2Circle, rangeImg)
+	game.display.skillTree.AddNode(iceBlasterDmg1)
+	game.display.skillTree.AddNode(iceBlasterRange1)
+	iceBlasterDmg1.AddMutualConnection(plasmaGrenadeDmg2)
+
+	aiSoldierDmg1 := aiSoldier.AddByDegreeWithOtherCircle(11.25+(22.5*8), rank2Circle, dmgImg)
+	aiSoldierHp1 := aiSoldier.AddByDegreeWithOtherCircle(11.25+(22.5*9), rank2Circle, hpImg)
+	game.display.skillTree.AddNode(aiSoldierHp1)
+	game.display.skillTree.AddNode(aiSoldierDmg1)
+	aiSoldierDmg1.AddMutualConnection(iceBlasterRange1)
+
+	poisonTrapDot1 := poisonTrap.AddByDegreeWithOtherCircle(11.25+(22.5*10), rank2Circle, dmgImg)
+	poisonTrapDmg1 := poisonTrap.AddByDegreeWithOtherCircle(11.25+(22.5*11), rank2Circle, dmgImg)
+	game.display.skillTree.AddNode(poisonTrapDmg1)
+	game.display.skillTree.AddNode(poisonTrapDot1)
+	poisonTrapDot1.AddMutualConnection(aiSoldierHp1)
+
+	flameThrowerDmg1 := flameThrower.AddByDegreeWithOtherCircle(11.25+(22.5*12), rank2Circle, dmgImg)
+	flameThrowerRange1 := flameThrower.AddByDegreeWithOtherCircle(11.25+(22.5*13), rank2Circle, rangeImg)
+	game.display.skillTree.AddNode(flameThrowerDmg1)
+	game.display.skillTree.AddNode(flameThrowerRange1)
+	flameThrowerDmg1.AddMutualConnection(poisonTrapDmg1)
+
+	// medicCd1 := medic.Add
 
 	game.display.node = startNode
 	game.display.SetStartPosition(nil)

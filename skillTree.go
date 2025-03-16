@@ -16,6 +16,9 @@ func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, 
 
 func (st *SkillTree) Draw(screen *ebiten.Image) {
 	for i := range st.nodes {
+		st.nodes[i].DrawLines(screen)
+	}
+	for i := range st.nodes {
 		st.nodes[i].Draw(screen)
 	}
 }

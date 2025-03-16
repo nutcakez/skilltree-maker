@@ -8,6 +8,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+type Circle struct {
+	x, y, radius float64
+}
+
 func PointInCircle(cx, cy, cr float32, x, y int32) bool {
 	dx := float32(x) - cx
 	dy := float32(y) - cy

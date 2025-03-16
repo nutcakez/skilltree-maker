@@ -57,8 +57,8 @@ func (d *Display) SetStartPosition(node *Node) {
 
 	midX := posX
 	midY := posY
-	d.panning.offsetX = -int(midX - float32(d.w)/float32(2))
-	d.panning.offsetY = -int(midY - float32(d.h)/float32(2))
+	d.panning.offsetX = -int(midX - float32(d.w*int(d.panning.zoom))/float32(2))
+	d.panning.offsetY = -int(midY - float32(d.h*int(d.panning.zoom))/float32(2))
 	fmt.Println("offsets", d.panning.offsetX, d.panning.offsetY)
 }
 
@@ -69,7 +69,8 @@ func (d *Display) Update() {
 
 func (d *Display) Draw(screen *ebiten.Image) {
 	d.offscreen.Fill(color.RGBA{0, 0, 255, 200})
-	d.node.Draw(d.offscreen)
+	// d.node.Draw(d.offscreen)
+	d.skillTree.Draw(d.offscreen)
 	op := ebiten.DrawImageOptions{}
 	// if we zoom in it means we want to see a bigger picture from screen2 but scaled to 500x500
 
