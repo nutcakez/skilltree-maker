@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 type Circle struct {
-	x, y, radius float64
+	X, Y, Radius float64
 }
 
 func PointInCircle(cx, cy, cr float32, x, y int32) bool {

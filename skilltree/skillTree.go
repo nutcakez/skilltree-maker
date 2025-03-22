@@ -1,4 +1,4 @@
-package main
+package skilltree
 
 import "github.com/hajimehoshi/ebiten/v2"
 

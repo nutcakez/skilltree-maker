@@ -1,4 +1,4 @@
-package main
+package display
 
 import (
 	"fmt"
@@ -7,14 +7,15 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/nutcakez/skilltree-maker/skilltree"
 )
 
 type Display struct {
 	posX, posY float64
 	w, h       int
 	visible    bool
-	node       *Node
-	skillTree  *SkillTree
+	Node       *skilltree.Node
+	SkillTree  *skilltree.SkillTree
 	offscreen  *ebiten.Image
 	panning    *Panning
 }
@@ -26,29 +27,29 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 		w:         width,
 		h:         height,
 		visible:   false,
-		node:      nil,
+		Node:      nil,
 		offscreen: ebiten.NewImage(4000, 4000),
 		panning:   NewPanning(),
-		skillTree: &SkillTree{
-			Nodes: make([]*Node, 0),
+		SkillTree: &skilltree.SkillTree{
+			Nodes: make([]*skilltree.Node, 0),
 		},
 	}
 
 	return display
 }
 
-func (d *Display) SetStartPosition(node *Node) {
+func (d *Display) SetStartPosition(node *skilltree.Node) {
 	var posX, posY float32
 	if node == nil {
-		posX = d.skillTree.Nodes[0].x
-		posY = d.skillTree.Nodes[0].y
+		posX = d.SkillTree.Nodes[0].X
+		posY = d.SkillTree.Nodes[0].Y
 		// w = d.skillTree.nodes[0].img.Bounds().Dx()
 		// h = d.skillTree.nodes[0].img.Bounds().Dy()
 	} else {
-		for i := range d.skillTree.Nodes {
-			if d.skillTree.Nodes[i] == node {
-				posX = d.skillTree.Nodes[i].x
-				posY = d.skillTree.Nodes[i].y
+		for i := range d.SkillTree.Nodes {
+			if d.SkillTree.Nodes[i] == node {
+				posX = d.SkillTree.Nodes[i].X
+				posY = d.SkillTree.Nodes[i].Y
 				// w = d.skillTree.nodes[0].img.Bounds().Dx()
 				// h = d.skillTree.nodes[0].img.Bounds().Dy()
 			}
@@ -64,13 +65,13 @@ func (d *Display) SetStartPosition(node *Node) {
 
 func (d *Display) Update() {
 	d.panning.Update()
-	d.skillTree.Update(d.panning.OffsetX, d.panning.OffsetY, int(d.posX), int(d.posY), d.panning.Zoom)
+	d.SkillTree.Update(d.panning.OffsetX, d.panning.OffsetY, int(d.posX), int(d.posY), d.panning.Zoom)
 }
 
 func (d *Display) Draw(screen *ebiten.Image) {
 	d.offscreen.Fill(color.RGBA{0, 0, 255, 200})
 	// d.node.Draw(d.offscreen)
-	d.skillTree.Draw(d.offscreen)
+	d.SkillTree.Draw(d.offscreen)
 	op := ebiten.DrawImageOptions{}
 	// if we zoom in it means we want to see a bigger picture from screen2 but scaled to 500x500
 

@@ -2,19 +2,15 @@ package main
 
 import (
 	"fmt"
-	"image/color"
 	"log"
 	"os"
 	"runtime/pprof"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-)
-
-var (
-	red    = color.RGBA{255, 0, 0, 255}
-	green  = color.RGBA{0, 255, 0, 1}
-	orange = color.RGBA{255, 127, 80, 1}
+	"github.com/nutcakez/skilltree-maker/display"
+	"github.com/nutcakez/skilltree-maker/skilltree"
+	"github.com/nutcakez/skilltree-maker/util"
 )
 
 func main() {
@@ -29,13 +25,13 @@ func main() {
 
 	game := game{
 		objects:        make([]IDrawUpdate, 0),
-		panner:         NewPanning(),
+		panner:         display.NewPanning(),
 		screen2OffsetX: 50,
 		screen2OffsetY: 50,
-		display:        NewDisplay(200, 200, 500, 500),
+		display:        display.NewDisplay(200, 200, 500, 500),
 	}
 
-	images := ReadAllImageFromFolder("96x96")
+	images := util.ReadAllImageFromFolder("96x96")
 	fmt.Println(images)
 
 	// radiusShows := true
@@ -50,28 +46,28 @@ func main() {
 	cdImg := images[15]
 	// rangeImg := images[20]
 	//
-	rank2Circle := Circle{
-		x:      2000,
-		y:      2000,
-		radius: 600,
+	rank2Circle := util.Circle{
+		X:      2000,
+		Y:      2000,
+		Radius: 600,
 	}
 
-	startNode := NewDefaultImgNode(2000, 2000, images[32])
-	startNode.startNode = true
-	startNode.active = true
-	startNode.radius = 300
-	game.display.skillTree.AddNode(startNode)
+	startNode := skilltree.NewDefaultImgNode(2000, 2000, images[32])
+	startNode.StartNode = true
+	startNode.Active = true
+	startNode.Radius = 300
+	game.display.SkillTree.AddNode(startNode)
 
 	colossusHp1 := startNode.AddByDegree(-22.5, hpImg)
 	colossusCd1 := startNode.AddByDegree(22.5, cdImg)
-	game.display.skillTree.AddNode(colossusHp1)
-	game.display.skillTree.AddNode(colossusCd1)
+	game.display.SkillTree.AddNode(colossusHp1)
+	game.display.SkillTree.AddNode(colossusCd1)
 
 	colossus := colossusHp1.AddByDegreeWithOtherCircle(0, rank2Circle, hpImg)
 	colossus.AddMutualConnection(colossusCd1)
-	game.display.skillTree.AddNode(colossus)
+	game.display.SkillTree.AddNode(colossus)
 
-	game.display.node = startNode
+	game.display.Node = startNode
 	game.display.SetStartPosition(nil)
 
 	if err := ebiten.RunGame(&game); err != nil {
@@ -80,10 +76,10 @@ func main() {
 
 type game struct {
 	objects                        []IDrawUpdate
-	panner                         *Panning
+	panner                         *display.Panning
 	screen2                        *ebiten.Image
 	screen2OffsetX, screen2OffsetY int
-	display                        *Display
+	display                        *display.Display
 }
 
 func (g *game) Update() error {
