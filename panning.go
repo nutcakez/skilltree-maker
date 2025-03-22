@@ -8,66 +8,66 @@ import (
 )
 
 type Panning struct {
-	offsetX, offsetY int
-	prevX, prevY     int
-	zoom             float64
-	pressed          bool
-	changed          bool
+	OffsetX, OffsetY int
+	PrevX, PrevY     int
+	Zoom             float64
+	Pressed          bool
+	Changed          bool
 }
 
 func NewPanning() *Panning {
 	return &Panning{
-		zoom: 2,
+		Zoom: 2,
 	}
 }
 
 func (p *Panning) Update() {
-	fmt.Println("panner", p.offsetX, p.offsetY)
+	fmt.Println("panner", p.OffsetX, p.OffsetY)
 	_, wheelY := ebiten.Wheel()
-	p.changed = false
+	p.Changed = false
 
 	if wheelY > 0 {
-		p.zoom += 0.25
-		p.changed = true
+		p.Zoom += 0.25
+		p.Changed = true
 	}
 	if wheelY < 0 {
-		p.zoom -= 0.25
-		if p.zoom <= 0.2 {
-			p.zoom = 0.2
+		p.Zoom -= 0.25
+		if p.Zoom <= 0.2 {
+			p.Zoom = 0.2
 		}
-		p.changed = true
+		p.Changed = true
 	}
-	if p.changed {
-		fmt.Println(p.zoom)
+	if p.Changed {
+		fmt.Println(p.Zoom)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
-		p.offsetX, p.offsetY = 0, 0
+		p.OffsetX, p.OffsetY = 0, 0
 	}
-	if p.pressed {
+	if p.Pressed {
 		x, y := ebiten.CursorPosition()
-		p.offsetX -= int(float64(p.prevX-x) * p.zoom)
-		p.offsetY -= int(float64(p.prevY-y) * p.zoom)
+		p.OffsetX -= int(float64(p.PrevX-x) * p.Zoom)
+		p.OffsetY -= int(float64(p.PrevY-y) * p.Zoom)
 
-		p.prevX = x
-		p.prevY = y
+		p.PrevX = x
+		p.PrevY = y
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
-		p.pressed = true
-		p.prevX, p.prevY = ebiten.CursorPosition()
+		p.Pressed = true
+		p.PrevX, p.PrevY = ebiten.CursorPosition()
 	}
 
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButton0) {
-		p.pressed = false
+		p.Pressed = false
 	}
 
 	// offset maxing:
-	if p.offsetX > 0 {
-		p.offsetX = 0
+	if p.OffsetX > 0 {
+		p.OffsetX = 0
 	}
-	if p.offsetY > 0 {
-		p.offsetY = 0
+	if p.OffsetY > 0 {
+		p.OffsetY = 0
 	}
 }
 

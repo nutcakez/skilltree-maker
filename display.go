@@ -30,7 +30,7 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 		offscreen: ebiten.NewImage(4000, 4000),
 		panning:   NewPanning(),
 		skillTree: &SkillTree{
-			nodes: make([]*Node, 0),
+			Nodes: make([]*Node, 0),
 		},
 	}
 
@@ -40,15 +40,15 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 func (d *Display) SetStartPosition(node *Node) {
 	var posX, posY float32
 	if node == nil {
-		posX = d.skillTree.nodes[0].x
-		posY = d.skillTree.nodes[0].y
+		posX = d.skillTree.Nodes[0].x
+		posY = d.skillTree.Nodes[0].y
 		// w = d.skillTree.nodes[0].img.Bounds().Dx()
 		// h = d.skillTree.nodes[0].img.Bounds().Dy()
 	} else {
-		for i := range d.skillTree.nodes {
-			if d.skillTree.nodes[i] == node {
-				posX = d.skillTree.nodes[i].x
-				posY = d.skillTree.nodes[i].y
+		for i := range d.skillTree.Nodes {
+			if d.skillTree.Nodes[i] == node {
+				posX = d.skillTree.Nodes[i].x
+				posY = d.skillTree.Nodes[i].y
 				// w = d.skillTree.nodes[0].img.Bounds().Dx()
 				// h = d.skillTree.nodes[0].img.Bounds().Dy()
 			}
@@ -57,14 +57,14 @@ func (d *Display) SetStartPosition(node *Node) {
 
 	midX := posX
 	midY := posY
-	d.panning.offsetX = -int(midX - float32(d.w*int(d.panning.zoom))/float32(2))
-	d.panning.offsetY = -int(midY - float32(d.h*int(d.panning.zoom))/float32(2))
-	fmt.Println("offsets", d.panning.offsetX, d.panning.offsetY)
+	d.panning.OffsetX = -int(midX - float32(d.w*int(d.panning.Zoom))/float32(2))
+	d.panning.OffsetY = -int(midY - float32(d.h*int(d.panning.Zoom))/float32(2))
+	fmt.Println("offsets", d.panning.OffsetX, d.panning.OffsetY)
 }
 
 func (d *Display) Update() {
 	d.panning.Update()
-	d.skillTree.Update(d.panning.offsetX, d.panning.offsetY, int(d.posX), int(d.posY), d.panning.zoom)
+	d.skillTree.Update(d.panning.OffsetX, d.panning.OffsetY, int(d.posX), int(d.posY), d.panning.Zoom)
 }
 
 func (d *Display) Draw(screen *ebiten.Image) {
@@ -75,11 +75,11 @@ func (d *Display) Draw(screen *ebiten.Image) {
 	// if we zoom in it means we want to see a bigger picture from screen2 but scaled to 500x500
 
 	// figure out the scale here
-	op.GeoM.Scale(1/d.panning.zoom, 1/d.panning.zoom)
+	op.GeoM.Scale(1/d.panning.Zoom, 1/d.panning.Zoom)
 	op.GeoM.Translate(float64(d.posX), float64(d.posY))
 
 	// which part of the stuff we want?
-	rect := image.Rect(d.panning.offsetX, d.panning.offsetY, int(float64(d.w)*d.panning.zoom), int(float64(d.h)*d.panning.zoom))
+	rect := image.Rect(d.panning.OffsetX, d.panning.OffsetY, int(float64(d.w)*d.panning.Zoom), int(float64(d.h)*d.panning.Zoom))
 
 	vector.StrokeRect(screen, 0+float32(d.posX), 0+float32(d.posY), float32(d.w), float32(d.h), 2, color.RGBA{255, 0, 0, 255}, true)
 

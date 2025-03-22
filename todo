@@ -13,6 +13,16 @@ Node:
 
 
 Bug:
-  - Doing crazy zoom in/out will cause a huge hickup
   - Shouldnt be able to zoom out more than whats on the offscreen. Or it will show black edge.
   - Opening up the skill tree will have the start node in focus, later the last bought skill node will be in focus
+
+
+For next week:
+  - Finish skill tree (icons)
+  - rule engine is used
+  - Put it into the game
+  - Start the upgrade
+
+Mar 20:
+  - Change of plans:
+    - Creat the smaller skilltree

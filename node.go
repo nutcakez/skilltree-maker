@@ -17,8 +17,8 @@ type Node struct {
 	childs                           []*Node
 	parents                          []*Node
 	img                              *ebiten.Image
-	onActivate                       func()
-	requirement                      func() bool
+	OnActivate                       func()
+	Requirement                      func() bool
 	tags                             map[string]string
 }
 
@@ -31,8 +31,8 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 		strokeWidth: 2,
 		childs:      make([]*Node, 0),
 		img:         img,
-		onActivate:  func() { fmt.Println("actived node at", x, y) },
-		requirement: func() bool { return true },
+		OnActivate:  func() { fmt.Println("actived node at", x, y) },
+		Requirement: func() bool { return true },
 		tags:        nil,
 	}
 }
@@ -59,7 +59,7 @@ func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) bool {
 			int(float64(w)/zoom),
 			int(float64(h)/zoom)) && c.CanBeActivated() {
 			c.active = !c.active
-			c.onActivate()
+			c.OnActivate()
 			return true
 		}
 	}
@@ -166,7 +166,7 @@ func (c *Node) CanBeActivated() bool {
 	if c.active {
 		return false
 	}
-	if !c.requirement() {
+	if !c.Requirement() {
 		return true
 	}
 	if c.startNode {

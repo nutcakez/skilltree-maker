@@ -14,7 +14,7 @@ func NoMoreRank1(n *Node, tree *SkillTree) bool {
 		return false
 	}
 
-	for _, node := range tree.nodes {
+	for _, node := range tree.Nodes {
 		if node.active && node.tags["rank"] == "1" {
 			return false
 		}
@@ -27,7 +27,7 @@ func NoMoreRank2(n *Node, tree *SkillTree) bool {
 		return false
 	}
 
-	for _, node := range tree.nodes {
+	for _, node := range tree.Nodes {
 		if node.active && node.tags["rank"] == "2" {
 			return false
 		}
