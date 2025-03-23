@@ -22,7 +22,6 @@ func NewPanning() *Panning {
 }
 
 func (p *Panning) Update() {
-	fmt.Println("panner", p.OffsetX, p.OffsetY)
 	_, wheelY := ebiten.Wheel()
 	p.Changed = false
 
