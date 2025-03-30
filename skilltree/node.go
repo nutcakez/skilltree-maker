@@ -20,58 +20,60 @@ var (
 type Node struct {
 	showBigRadius, Active, StartNode bool
 	X, Y, Radius, StrokeWidth        float32
+	HoverText                        string
 	offsetX, offsetY                 int
 	childs                           []*Node
 	parents                          []*Node
 	img                              *ebiten.Image
 	OnActivate                       func()
 	Requirement                      func() bool
+	CustomCanBeActivated             func() bool // Overwrites the whole CanBeActivated flow, giving full controll to the user. Can be used to create unusual things, like not requiring nodes to have an active parents to be activated.
 	Tags                             map[string]string
+	RuleEngine                       *NodeRuleEngine
 }
 
 func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 	return &Node{
 		showBigRadius: false,
-		Active:        false, X: x,
-		Y:           y,
-		Radius:      300,
-		StrokeWidth: 2,
-		childs:      make([]*Node, 0),
-		img:         img,
-		OnActivate:  func() { fmt.Println("actived node at", x, y) },
-		Requirement: func() bool { return true },
-		Tags:        nil,
+		Active:        false,
+		X:             x,
+		Y:             y,
+		Radius:        300,
+		HoverText:     "potato",
+		StrokeWidth:   2,
+		childs:        make([]*Node, 0),
+		img:           img,
+		OnActivate:    func() { fmt.Println("actived node at", x, y) },
+		Requirement:   func() bool { return true },
+		Tags:          nil,
 	}
 }
 
-func (c *Node) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) {
+func (c *Node) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) (clicked, hovered bool) {
 	c.offsetX = offsetX
 	c.offsetY = offsetY
-	c.checkClick(zoom, windowOffsetX, windowOffsetY)
-	// if !c.checkClick(zoom, windowOffsetX, windowOffsetY) {
-	// 	for i := range c.childs {
-	// 		c.childs[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
-	// 	}
-	// }
+	clicked, hovered = c.checkClick(zoom, windowOffsetX, windowOffsetY)
+	return
 }
 
-func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) bool {
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
-		x, y := ebiten.CursorPosition()
-		w := c.img.Bounds().Dx()
-		h := c.img.Bounds().Dy()
-		if util.PointInRect(x, y,
-			int(float64(c.X-float32(w/2)+float32(c.offsetX))/zoom+float64(windowOffsetX)),
-			int(float64(c.Y-float32(h/2)+float32(c.offsetY))/zoom+float64(windowOffsetY)),
-			int(float64(w)/zoom),
-			int(float64(h)/zoom)) && c.CanBeActivated() {
+func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) (clicked, hovered bool) {
+	x, y := ebiten.CursorPosition()
+	w := c.img.Bounds().Dx()
+	h := c.img.Bounds().Dy()
+	hovered = util.PointInRect(x, y,
+		int(float64(c.X-float32(w/2)+float32(c.offsetX))/zoom+float64(windowOffsetX)),
+		int(float64(c.Y-float32(h/2)+float32(c.offsetY))/zoom+float64(windowOffsetY)),
+		int(float64(w)/zoom),
+		int(float64(h)/zoom))
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) && hovered {
+		if c.CanBeActivated() {
 			c.Active = !c.Active
 			c.OnActivate()
-			return true
+			clicked = true
 		}
 	}
 
-	return false
+	return clicked, hovered
 }
 
 func (c *Node) Draw(screen *ebiten.Image) {
@@ -100,9 +102,6 @@ func (c *Node) Draw(screen *ebiten.Image) {
 	if c.showBigRadius {
 		vector.StrokeCircle(screen, c.X+float32(c.offsetX), c.Y+float32(c.offsetY), c.Radius, c.StrokeWidth, green, true)
 	}
-	// for _, v := range c.childs {
-	// 	v.Draw(screen)
-	// }
 }
 
 func (n *Node) DrawLines(screen *ebiten.Image) {
@@ -170,6 +169,10 @@ func (n *Node) AddMutualChildConnection(node *Node) {
 }
 
 func (c *Node) CanBeActivated() bool {
+	if c.CustomCanBeActivated != nil {
+		return c.CustomCanBeActivated()
+	}
+
 	if c.Active {
 		return false
 	}
@@ -181,10 +184,12 @@ func (c *Node) CanBeActivated() bool {
 			break
 		}
 	}
+	if !hasActiveParent {
+		return false
+	}
 
 	return c.Requirement()
 }
-
 
 func GetPointOnCircle(cx, cy, radius, degree float64) (float64, float64) {
 	// Convert degrees to radians
