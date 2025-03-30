@@ -173,19 +173,18 @@ func (c *Node) CanBeActivated() bool {
 	if c.Active {
 		return false
 	}
-	if !c.Requirement() {
-		return true
-	}
-	if c.StartNode {
-		return true
-	}
+
+	var hasActiveParent bool
 	for _, parent := range c.parents {
 		if parent.Active {
-			return true
+			hasActiveParent = true
+			break
 		}
 	}
-	return false
+
+	return c.Requirement()
 }
+
 
 func GetPointOnCircle(cx, cy, radius, degree float64) (float64, float64) {
 	// Convert degrees to radians
