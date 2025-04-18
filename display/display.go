@@ -77,7 +77,7 @@ func (d *Display) SetStartPosition(node *skilltree.Node) {
 
 func (d *Display) Update() {
 	d.panning.Update()
-	d.hoverText = d.SkillTree.Update(d.panning.OffsetX, d.panning.OffsetY, int(d.posX), int(d.posY), d.panning.Zoom)
+	_, d.hoverText = d.SkillTree.Update(d.panning.OffsetX, d.panning.OffsetY, int(d.posX), int(d.posY), d.panning.Zoom)
 }
 
 func (d *Display) Draw(screen *ebiten.Image) {

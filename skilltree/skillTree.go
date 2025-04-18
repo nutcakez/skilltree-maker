@@ -9,17 +9,20 @@ type SkillTree struct {
 	ruleEngine *NodeRuleEngine
 }
 
-func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) string {
+func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) (*int, string) {
 	for i := range st.Nodes {
 		st.Nodes[i].offsetX = offsetX
 		st.Nodes[i].offsetY = offsetY
-		_, hovered := st.Nodes[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
+		clicked, hovered := st.Nodes[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
+		if clicked {
+			return &i, st.Nodes[i].HoverText
+		}
 		if hovered {
-			return st.Nodes[i].HoverText
+			return nil, st.Nodes[i].HoverText
 		}
 	}
 
-	return ""
+	return nil, ""
 }
 
 func (st *SkillTree) Draw(screen *ebiten.Image) {
