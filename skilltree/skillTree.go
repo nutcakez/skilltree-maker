@@ -20,8 +20,8 @@ func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, 
 		st.Nodes[i].offsetY = offsetY
 		clicked, hovered := st.Nodes[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
 		if clicked {
-			for i := range st.eventListeners {
-				st.eventListeners[i].ClickedNode(i)
+			for x := range st.eventListeners {
+				st.eventListeners[x].ClickedNode(i)
 			}
 			return &i, st.Nodes[i].HoverText
 		}
