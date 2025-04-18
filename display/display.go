@@ -44,7 +44,7 @@ func NewDisplay(posX, posY float64, width, height int) *Display {
 		visible:   false,
 		textFace:  textFace,
 		Node:      nil,
-		offscreen: ebiten.NewImage(4000, 4000),
+		offscreen: ebiten.NewImage(1000, 1000),
 		panning:   NewPanning(),
 		SkillTree: &skilltree.SkillTree{
 			Nodes: make([]*skilltree.Node, 0),
