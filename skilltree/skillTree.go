@@ -4,9 +4,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type eventListener interface {
+	ClickedNode(nodeIndex int)
+}
+
 type SkillTree struct {
-	Nodes      []*Node
-	ruleEngine *NodeRuleEngine
+	Nodes          []*Node
+	ruleEngine     *NodeRuleEngine
+	eventListeners []eventListener
 }
 
 func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) (*int, string) {
@@ -15,6 +20,9 @@ func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, 
 		st.Nodes[i].offsetY = offsetY
 		clicked, hovered := st.Nodes[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
 		if clicked {
+			for i := range st.eventListeners {
+				st.eventListeners[i].ClickedNode(i)
+			}
 			return &i, st.Nodes[i].HoverText
 		}
 		if hovered {
@@ -45,4 +53,8 @@ func (st *SkillTree) AddRule(name string, rule func(n *Node, st *SkillTree) bool
 
 func (st *SkillTree) RuleCheck(node *Node) bool {
 	return st.ruleEngine.Check(node, st)
+}
+
+func (st *SkillTree) AddEventListener(listener eventListener) {
+	st.eventListeners = append(st.eventListeners, listener)
 }
