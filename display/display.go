@@ -104,13 +104,13 @@ func (d *Display) Draw(screen *ebiten.Image) {
 
 func (d *Display) drawHoverText(screen *ebiten.Image) {
 	x, y := ebiten.CursorPosition()
-	w, h := text.Measure("potato", &d.textFace, 20)
+	w, h := text.Measure(d.hoverText, &d.textFace, 0)
 	offsetX := 20
 	offsetY := 20
 
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(float64(x)+float64(offsetX), float64(y)+float64(offsetY))
-	op.LineSpacing = 40 * 1.2
+	op.LineSpacing = 20 * 1.2
 
 	numOfLines := strings.Count(d.hoverText, "\n") + 1
 	vector.DrawFilledRect(screen, float32(x+offsetX), float32(y+offsetY), float32(w), float32(h*float64(numOfLines)), color.RGBA{59, 59, 59, 255}, true)

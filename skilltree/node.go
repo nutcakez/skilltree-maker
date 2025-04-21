@@ -39,13 +39,14 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 		X:             x,
 		Y:             y,
 		Radius:        300,
-		HoverText:     "potato",
-		StrokeWidth:   2,
-		childs:        make([]*Node, 0),
-		img:           img,
-		OnActivate:    func() { fmt.Println("actived node at", x, y) },
-		Requirement:   func() bool { return true },
-		Tags:          nil,
+		HoverText: `potato
+potato 2`,
+		StrokeWidth: 2,
+		childs:      make([]*Node, 0),
+		img:         img,
+		OnActivate:  func() { fmt.Println("actived node at", x, y) },
+		Requirement: func() bool { return true },
+		Tags:        nil,
 	}
 }
 
