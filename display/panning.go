@@ -25,11 +25,11 @@ func (p *Panning) Update() {
 	_, wheelY := ebiten.Wheel()
 	p.Changed = false
 
-	if wheelY > 0 {
+	if wheelY < 0 {
 		p.Zoom += 0.25
 		p.Changed = true
 	}
-	if wheelY < 0 {
+	if wheelY > 0 {
 		p.Zoom -= 0.25
 		if p.Zoom <= 0.2 {
 			p.Zoom = 0.2
