@@ -17,7 +17,7 @@ type Panning struct {
 
 func NewPanning() *Panning {
 	return &Panning{
-		Zoom: 2,
+		Zoom: 1.25,
 	}
 }
 
