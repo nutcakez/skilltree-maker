@@ -39,7 +39,7 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 		X:             x,
 		Y:             y,
 		Radius:        300,
-		HoverText: `potato
+		HoverText: `default hoverText to test multiline
 potato 2`,
 		StrokeWidth: 2,
 		childs:      make([]*Node, 0),
