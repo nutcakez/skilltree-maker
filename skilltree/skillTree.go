@@ -15,22 +15,25 @@ type SkillTree struct {
 }
 
 func (st *SkillTree) Update(offsetX, offsetY, windowOffsetX, windowOffsetY int, zoom float64) (*int, string) {
+	var returnedIndex *int
+	var text string
 	for i := range st.Nodes {
 		st.Nodes[i].offsetX = offsetX
 		st.Nodes[i].offsetY = offsetY
 		clicked, hovered := st.Nodes[i].Update(offsetX, offsetY, windowOffsetX, windowOffsetY, zoom)
+		if hovered {
+			text = st.Nodes[i].HoverText
+		}
 		if clicked {
 			for x := range st.eventListeners {
 				st.eventListeners[x].ClickedNode(i)
 			}
-			return &i, st.Nodes[i].HoverText
-		}
-		if hovered {
-			return nil, st.Nodes[i].HoverText
+			returnedIndex = &i
+			text = st.Nodes[i].HoverText
 		}
 	}
 
-	return nil, ""
+	return returnedIndex, text
 }
 
 func (st *SkillTree) Draw(screen *ebiten.Image) {
