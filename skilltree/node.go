@@ -23,8 +23,8 @@ type Node struct {
 	X, Y, Radius, StrokeWidth                float32
 	HoverText                                string
 	offsetX, offsetY                         int
-	childs                                   []*Node
-	parents                                  []*Node
+	Childs                                   []*Node
+	Parents                                  []*Node
 	img                                      *ebiten.Image
 	OnActivate                               func()
 	Requirement                              func() bool
@@ -43,7 +43,7 @@ func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
 		HoverText: `default hoverText to test multiline
 potato 2`,
 		StrokeWidth: 2,
-		childs:      make([]*Node, 0),
+		Childs:      make([]*Node, 0),
 		img:         img,
 		OnActivate:  func() { fmt.Println("actived node at", x, y) },
 		Requirement: func() bool { return true },
@@ -123,7 +123,7 @@ func (c *Node) Draw(screen *ebiten.Image) {
 }
 
 func (n *Node) DrawLines(screen *ebiten.Image) {
-	for _, v := range n.childs {
+	for _, v := range n.Childs {
 		// with antialias false its a bit better when zoomed out, should be set to false only when its zoomed out?
 		vector.StrokeLine(screen, n.X+float32(n.offsetX), n.Y+float32(n.offsetY), v.X+float32(n.offsetX), v.Y+float32(n.offsetY), 2, orange, false)
 	}
@@ -134,9 +134,9 @@ func (n *Node) AddByDegreeWithOtherCircle(degree float64, circle util.Circle, im
 	newX, newY := GetPointOnCircle(circle.X, circle.Y, circle.Radius, degree)
 
 	newNode := NewDefaultImgNode(float32(newX), float32(newY), img)
-	newNode.parents = append(newNode.parents, n)
+	newNode.Parents = append(newNode.Parents, n)
 
-	n.childs = append(n.childs, newNode)
+	n.Childs = append(n.Childs, newNode)
 
 	return newNode
 }
@@ -146,9 +146,9 @@ func (c *Node) AddByDegree(degree float64, img *ebiten.Image) *Node {
 	newX, newY := GetPointOnCircle(float64(c.X), float64(c.Y), float64(c.Radius), degree)
 
 	newNode := NewDefaultImgNode(float32(newX), float32(newY), img)
-	newNode.parents = append(newNode.parents, c)
+	newNode.Parents = append(newNode.Parents, c)
 
-	c.childs = append(c.childs, newNode)
+	c.Childs = append(c.Childs, newNode)
 
 	return newNode
 }
@@ -177,13 +177,13 @@ func (n *Node) AddMutualConnection(node *Node) {
 }
 
 func (n *Node) AddMutualParentConnection(node *Node) {
-	n.parents = append(n.parents, node)
-	node.parents = append(node.parents, n)
+	n.Parents = append(n.Parents, node)
+	node.Parents = append(node.Parents, n)
 }
 
 func (n *Node) AddMutualChildConnection(node *Node) {
-	n.childs = append(n.childs, node)
-	node.childs = append(node.childs, n)
+	n.Childs = append(n.Childs, node)
+	node.Childs = append(node.Childs, n)
 }
 
 func (c *Node) CanBeActivated() bool {
@@ -196,7 +196,7 @@ func (c *Node) CanBeActivated() bool {
 	}
 
 	var hasActiveParent bool
-	for _, parent := range c.parents {
+	for _, parent := range c.Parents {
 		if parent.Active {
 			hasActiveParent = true
 			break
