@@ -57,6 +57,7 @@ func main() {
 
 	colossusHp1 := startNode.AddByDegree(-22.5, hpImg)
 	colossusCd1 := startNode.AddByDegree(22.5, cdImg)
+	colossusCd1.Locked = true
 	game.display.SkillTree.AddNode(colossusHp1)
 	game.display.SkillTree.AddNode(colossusCd1)
 

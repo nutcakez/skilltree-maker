@@ -15,21 +15,22 @@ var (
 	red    = color.RGBA{255, 0, 0, 255}
 	green  = color.RGBA{0, 255, 0, 1}
 	orange = color.RGBA{255, 127, 80, 1}
+	gray   = color.RGBA{125, 125, 125, 200}
 )
 
 type Node struct {
-	showBigRadius, Active, StartNode bool
-	X, Y, Radius, StrokeWidth        float32
-	HoverText                        string
-	offsetX, offsetY                 int
-	childs                           []*Node
-	parents                          []*Node
-	img                              *ebiten.Image
-	OnActivate                       func()
-	Requirement                      func() bool
-	CustomCanBeActivated             func() bool // Overwrites the whole CanBeActivated flow, giving full controll to the user. Can be used to create unusual things, like not requiring nodes to have an active parents to be activated.
-	Tags                             map[string]string
-	RuleEngine                       *NodeRuleEngine
+	showBigRadius, Active, Locked, StartNode bool
+	X, Y, Radius, StrokeWidth                float32
+	HoverText                                string
+	offsetX, offsetY                         int
+	childs                                   []*Node
+	parents                                  []*Node
+	img                                      *ebiten.Image
+	OnActivate                               func()
+	Requirement                              func() bool
+	CustomCanBeActivated                     func() bool // Overwrites the whole CanBeActivated flow, giving full controll to the user. Can be used to create unusual things, like not requiring nodes to have an active parents to be activated.
+	Tags                                     map[string]string
+	RuleEngine                               *NodeRuleEngine
 }
 
 func NewDefaultImgNode(x, y float32, img *ebiten.Image) *Node {
@@ -80,25 +81,41 @@ func (c *Node) checkClick(zoom float64, windowOffsetX, windowOffsetY int) (click
 func (c *Node) Draw(screen *ebiten.Image) {
 	var color color.RGBA
 
-	if c.Active {
-		color = green
+	if c.Locked {
+		color = gray
 	} else {
-		color = red
+		if c.Active {
+			color = green
+		} else {
+			color = red
+		}
 	}
 
 	op := ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(c.X-float32(c.img.Bounds().Dx()/2)+float32(c.offsetX)), float64(c.Y-float32(c.img.Bounds().Dy()/2)+float32(c.offsetY)))
 	screen.DrawImage(c.img, &op)
 	strokeWith := 5
-	vector.StrokeRect(screen,
-		float32(c.X-float32(c.img.Bounds().Dx()/2)+float32(c.offsetX)),
-		float32(c.Y-float32(c.img.Bounds().Dy()/2)+float32(c.offsetY)),
-		float32(c.img.Bounds().Dx()),
-		float32(c.img.Bounds().Dy()),
-		float32(strokeWith),
-		color,
-		true,
-	)
+
+	if color == gray {
+		vector.DrawFilledRect(screen,
+			float32(c.X-float32(c.img.Bounds().Dx()/2)+float32(c.offsetX)),
+			float32(c.Y-float32(c.img.Bounds().Dy()/2)+float32(c.offsetY)),
+			float32(c.img.Bounds().Dx()),
+			float32(c.img.Bounds().Dy()),
+			color,
+			true,
+		)
+	} else {
+		vector.StrokeRect(screen,
+			float32(c.X-float32(c.img.Bounds().Dx()/2)+float32(c.offsetX)),
+			float32(c.Y-float32(c.img.Bounds().Dy()/2)+float32(c.offsetY)),
+			float32(c.img.Bounds().Dx()),
+			float32(c.img.Bounds().Dy()),
+			float32(strokeWith),
+			color,
+			true,
+		)
+	}
 
 	if c.showBigRadius {
 		vector.StrokeCircle(screen, c.X+float32(c.offsetX), c.Y+float32(c.offsetY), c.Radius, c.StrokeWidth, green, true)
@@ -174,7 +191,7 @@ func (c *Node) CanBeActivated() bool {
 		return c.CustomCanBeActivated()
 	}
 
-	if c.Active {
+	if c.Active || c.Locked {
 		return false
 	}
 
